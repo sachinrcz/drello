@@ -7,6 +7,7 @@ import {
     PopoverClose
 } from "@/components/ui/popover"
 
+import { ElementRef, useRef } from "react";
 import { useAction } from "@/hooks/use-action";
 import { createBoard } from "@/actions/create-board";
 
@@ -16,6 +17,8 @@ import { Button } from "../ui/button";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { FormPicker } from "./form-picker";
+import { useRouter } from "next/navigation";
+
 
 
 interface FormPopoverProps {
@@ -32,10 +35,14 @@ export const FormPopover = ({
     sideOffset,
 }: FormPopoverProps) => {
 
+    const router = useRouter();
+    const closeref = useRef<ElementRef<"button">>(null)
+
     const { execute, fieldErrors} = useAction(createBoard, {
         onSuccess: (data)=> {
-            console.log({data});
-            toast.success("Board Created")
+            toast.success("Board Created");
+            closeref?.current?.click();
+            router.push(`/board/${data.id}`)
         },
         onError: (error) => {
             console.log({error});
@@ -45,8 +52,9 @@ export const FormPopover = ({
 
     const onSubmit = (formData: FormData) => {
         const title = formData.get("title") as string;
-
-        execute({title});
+        const image = formData.get("image") as string;
+        
+        execute({title, image});
     }
 
     return (
@@ -63,7 +71,7 @@ export const FormPopover = ({
                 <div className="text-sm font-medium text-center text-neutral-600 pb-4">
                     Create Board
                 </div>
-                <PopoverClose asChild>
+                <PopoverClose ref={closeref} asChild>
                     <Button
                         className="h-auto w-auto p-2 absolute top-2 right-2 text-neutral-600"
                         variant="ghost"
