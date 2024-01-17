@@ -10,6 +10,7 @@ import { redirect } from "next/navigation";
 import { CreateAuditLog } from "@/lib/create-audit-log";
 import { ACTION, ENTITY_TYPE } from "@prisma/client";
 import { decreaseAvailableCount } from "@/lib/org-limit";
+import { checkSubscription } from "@/lib/subscription";
 
 const handler = async(data:InputType): Promise<ReturnType> =>{
 
@@ -33,7 +34,11 @@ const handler = async(data:InputType): Promise<ReturnType> =>{
             },
         })
 
-        await decreaseAvailableCount();
+        const isPro = await checkSubscription();
+        if(!isPro){
+            await decreaseAvailableCount();
+        }
+        
 
         await CreateAuditLog({
             entityId: board.id,
