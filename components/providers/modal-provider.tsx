@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { CardModal } from "../modals/card-modal";
+import { ProModal } from "../modals/pro-modal";
+
 
 export const ModalProvider = () => {
 
@@ -18,6 +20,7 @@ export const ModalProvider = () => {
     return (
         <>
             <CardModal />
+            <ProModal />
         </>
     )
 }
